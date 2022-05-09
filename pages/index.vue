@@ -4,23 +4,34 @@
       connect wallet
     </button>
     <div>
-      <div>
-        Tokens:
-      </div>
-      <div v-for="address in tokensKeys" :key="address">
-        {{ tokensMap[address].symbol }}
-        {{ tokensMap[address].decimals }}
-        {{ tokensMap[address].balance || '-' }}
-      </div>
+      Tokens:
     </div>
-    <div>
-      <input v-model="amount" type="text" placeholder="amount">
-    </div>
-    <div>
-      <input v-model="recipient" type="text" placeholder="recipient">
-      <button class="btn btn-primary" @click="handleApprove">
-        Approve
-      </button>
+    <div class="tokens">
+      <div v-for="address in tokensKeys" :key="address" class="tokens__info">
+        <div> Symbol: {{ tokensMap[address].symbol }} </div>
+        <div> Decimal: {{ tokensMap[address].decimals }} </div>
+        <div> Name: {{ tokensMap[address].name }} </div>
+        <div>
+          Allowance: {{ tokensMap[address].allowance }}
+        </div>
+        <div>
+          Your balance: {{ tokensMap[address].balance || '-' }}
+        </div>
+        <div v-if="tokensMap[address].use === 'STAKING'">
+          <div>
+            <input v-model="mint" type="text" placeholder="mint">
+            <button class="btn btn-primary" @click="handleMint(address)">
+              Mint
+            </button>
+          </div>
+          <div>
+            <input v-model="amount" type="text" placeholder="amount">
+            <button class="btn btn-primary" @click="handleApprove">
+              Approve
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -32,11 +43,12 @@ import MainVue from '~/mixins/MainVue'
 export default MainVue.extend({
   data: () => ({
     recipient: '',
-    amount: ''
+    amount: '',
+    mint: ''
   }),
   async mounted () {
     await this.connectNode()
-    // await this.connectWallet()
+    await this.connectWallet()
   },
   computed: {
     ...mapGetters({
@@ -48,7 +60,8 @@ export default MainVue.extend({
     ...mapActions({
       connectNode: 'web3/connectNode',
       connectWallet: 'web3/connectWallet',
-      approve: 'token/approve'
+      approve: 'token/approve',
+      mintTokens: 'token/mintTokens'
     }),
     handleApprove () {
       const { recipient, tokensKeys, amount } = this
@@ -56,6 +69,12 @@ export default MainVue.extend({
         tokenAddress: tokensKeys[0],
         recipient,
         amount
+      })
+    },
+    handleMint (address: string) {
+      this.mintTokens({
+        tokenAddress: address,
+        amount: this.mint
       })
     }
   }
@@ -65,5 +84,9 @@ export default MainVue.extend({
 <style lang="scss" scoped>
 .example {
   @include container;
+}
+.tokens {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

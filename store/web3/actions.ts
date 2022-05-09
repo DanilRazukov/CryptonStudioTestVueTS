@@ -1,17 +1,25 @@
 import { ActionTree } from 'vuex'
 import { IWeb3State } from '~/store/web3/state'
 import { connectNode, connectWallet } from '~/utils/web3'
+import { STAKING, REWARD } from '~/utils/abis'
 
 const actions: ActionTree<IWeb3State, IWeb3State> = {
   async connectNode ({ dispatch }) {
+    console.log(process.env)
     const r = connectNode()
-    const addressesTokens = [
-      '0x4b107a23361770534bd1839171bbf4b0eb56485c',
-      '0xc13da4146d381c7032ca1ed6050024b4e324f4ef',
-      '0x8d0c36c8842d1dc9e49fbd31b81623c1902b7819',
-      '0xa364f66f40b8117bbdb772c13ca6a3d36fe95b13'
+    const tokensInfo = [
+      {
+        address: process.env.staking,
+        abi: STAKING,
+        use: 'STAKING'
+      },
+      {
+        address: process.env.rewards,
+        abi: REWARD,
+        use: 'REWARD'
+      }
     ]
-    dispatch('token/createTokensByAddresses', { addresses: addressesTokens }, { root: true })
+    dispatch('token/createTokensByAddresses', tokensInfo, { root: true })
     await dispatch('token/fetchCommonDataToken', null, { root: true })
     return r
   },

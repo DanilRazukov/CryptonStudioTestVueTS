@@ -69,6 +69,9 @@ export default {
     }
   },
   env: {
-    exampleValue: process.env.EXAMPLE_VALUE
+    isMainNet: process.env.IS_MAIN_NET,
+    staking: process.env.STAKING,
+    rewards: process.env.REWARDS,
+    contract: process.env.CONTRACT
   }
 }

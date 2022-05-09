@@ -3,9 +3,10 @@ import Web3 from 'web3'
 import Web4 from '@cryptonteam/web4'
 import BigNumber from 'bignumber.js'
 import { output, error, IResponse } from '~/utils/index'
-import { ERC20 } from '~/utils/abis'
+import { ERC20, CONTRACT } from '~/utils/abis'
+import web3 from '~/pages/web3.vue'
 
-const { IS_MAINNET } = process.env
+const { isMainNet } = process.env
 
 let web3Wallet: any
 let web3Guest: any
@@ -18,6 +19,7 @@ BigNumber.config({ EXPONENTIAL_AT: 60 })
 let pingTimer: any
 
 export const fetchContractData = async (method: string, abi: Array<any>, address: string, params?: Array<any>): Promise<any> => {
+  console.log(method, abi, address)
   try {
     const contract = new web3Guest.eth.Contract(abi, address)
     return await contract.methods[method].apply(this, params).call()
@@ -68,14 +70,17 @@ export const example1 = async (): Promise<IResponse> => {
 }
 
 export const connectNode = (): IResponse => {
+  console.log('connectNode')
   try {
     let bscUrl
-    if (process.env.IS_MAINNET === 'true') {
-      bscUrl = 'wss://mainnet.infura.io/ws/v3/4f9234a0518644ef9b62fb4d4ff53df2'
+    if (isMainNet === 'true') {
+      bscUrl = 'wss://mainnet.infura.io/ws/v3/bed8228e34fc4e7c9ec5d121742f8200'
     } else {
-      bscUrl = 'wss://rinkeby.infura.io/ws/v3/4f9234a0518644ef9b62fb4d4ff53df2'
+      bscUrl = 'wss://rinkeby.infura.io/ws/v3/bed8228e34fc4e7c9ec5d121742f8200'
     }
+    console.log(bscUrl)
     const provider = new Web3.providers.WebsocketProvider(bscUrl)
+    console.log(provider)
     web3Guest = new Web3(provider)
     return output()
   } catch (e) {
@@ -95,6 +100,8 @@ export const sendTransaction = async (method: string, abi: any[], address: strin
 }
 
 export const connectWallet = async (): Promise<IResponse> => {
+  console.log(isMainNet)
+  console.log(process.env)
   try {
     // @ts-ignore
     const { ethereum } = window
@@ -108,10 +115,50 @@ export const connectWallet = async (): Promise<IResponse> => {
       userAddress = await web3Wallet.eth.getCoinbase()
     }
     chainId = await web3Wallet.eth.net.getId()
-    if (IS_MAINNET !== 'true' && +chainId !== 4) {
-      return error(403, 'invalid chain, change to rinkeby')
-    } else if (IS_MAINNET === 'true' && +chainId !== 1) {
-      return error(403, 'invalid chain, change to mainnet')
+    console.log(chainId)
+    if (isMainNet !== 'true' && +chainId !== 4) {
+      // await ethereum.request({
+      //   method: 'wallet_addEthereumChain',
+      //   params: [
+      //     {
+      //       chainId: '0x4',
+      //       chainName: 'Тестовая сеть Rinkeby',
+      //       nativeCurrency: {
+      //         name: 'ETH',
+      //         symbol: 'ETH',
+      //         decimals: 18
+      //       },
+      //       rpcUrls: ['https://rinkeby.infura.io/v3/'],
+      //       blockExplorerUrls: ['https://rinkeby.etherscan.io']
+      //     }
+      //   ]
+      // })
+      ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [
+          {
+            chainId: '0x4'
+            // chainName: 'Тестовая сеть Rinkeby',
+            // nativeCurrency: {
+            //   name: 'ETH',
+            //   symbol: 'ETH',
+            //   decimals: 18
+            // },
+            // rpcUrls: ['https://rinkeby.infura.io/v3/']
+            // blockExplorerUrls: ['https://rinkeby.etherscan.io']
+          }
+        ]
+      })
+      // return error(403, 'invalid chain, change to rinkeby')
+    } else if (isMainNet === 'true' && +chainId !== 1) {
+      ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [
+          {
+            chainId: '0x1'
+          }
+        ]
+      })
     }
     web4 = new Web4()
     web4.setProvider(ethereum, userAddress)
@@ -155,6 +202,11 @@ export const getFee = async (method: string, abi: Array<any>, address: string, p
     console.log(e)
     return ''
   }
+}
+
+export const mintTokens = async (abi: Array<any>, address: string, amount: string): Promise<any> => {
+  const contract = new web3Guest.eth.Contract(abi, address)
+  await contract.methods.mint(userAddress, amount).call()
 }
 
 export const getWeb3 = (): any => web3Wallet || web3Guest
