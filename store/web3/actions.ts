@@ -5,7 +5,6 @@ import { STAKING, REWARD } from '~/utils/abis'
 
 const actions: ActionTree<IWeb3State, IWeb3State> = {
   async connectNode ({ dispatch }) {
-    console.log(process.env)
     const r = connectNode()
     const tokensInfo = [
       {

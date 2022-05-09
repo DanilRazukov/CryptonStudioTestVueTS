@@ -163,24 +163,6 @@ export const connectWallet = async (): Promise<IResponse> => {
     web4 = new Web4()
     web4.setProvider(ethereum, userAddress)
 
-    // const r = await sendTransaction(
-    //   'transfer',
-    //   ERC20,
-    //   '0x4b107a23361770534bd1839171bbf4b0eb56485c',
-    //   [
-    //     '0xa364f66f40b8117bbdb772c13ca6a3d36fe95b13', '321'
-    //   ]
-    // )
-
-    // const inst = new web3Wallet.eth.Contract(ERC20, '0x4b107a23361770534bd1839171bbf4b0eb56485c')
-    // const data = inst.methods.approve.apply(null, ['0xa364f66f40b8117bbdb772c13ca6a3d36fe95b13', '100']).encodeABI()
-    // const r = await web3Wallet.eth.sendTransaction({
-    //   to: '0x4b107a23361770534bd1839171bbf4b0eb56485c',
-    //   data,
-    //   from: userAddress
-    // })
-    // console.log(r)
-
     return output({ userAddress })
   } catch (err) {
     return error(4001, 'connection error', err)
@@ -205,8 +187,8 @@ export const getFee = async (method: string, abi: Array<any>, address: string, p
 }
 
 export const mintTokens = async (abi: Array<any>, address: string, amount: string): Promise<any> => {
-  const contract = new web3Guest.eth.Contract(abi, address)
-  await contract.methods.mint(userAddress, amount).call()
+  const contract = new web3Wallet.eth.Contract(abi, address)
+  await contract.methods.mint(userAddress, amount).send({ from: userAddress })
 }
 
 export const getWeb3 = (): any => web3Wallet || web3Guest
