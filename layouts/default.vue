@@ -1,14 +1,8 @@
 <template>
   <div class="primary">
     <div class="primary__template template">
-      <div class="template__header">
-        Header
-      </div>
       <div class="template__content">
         <nuxt />
-      </div>
-      <div class="template__footer">
-        Footer
       </div>
     </div>
     <base-modal-container />
