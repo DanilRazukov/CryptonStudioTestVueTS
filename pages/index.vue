@@ -66,6 +66,9 @@
             </button>
           </div>
         </div>
+        <button class="btn btn-primary" @click="refresh">
+          Refresh
+        </button>
       </div>
     </div>
   </div>
@@ -152,6 +155,11 @@ export default MainVue.extend({
       await this.unstakeTokens(this.amountUnstake)
       await this.fetchUserDataTokens()
       this.amountUnstake = ''
+      this.changeLoader(false)
+    },
+    async refresh () {
+      this.changeLoader(true)
+      await this.fetchUserDataTokens()
       this.changeLoader(false)
     }
   }
