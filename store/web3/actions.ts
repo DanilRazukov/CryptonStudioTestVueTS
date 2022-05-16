@@ -1,7 +1,8 @@
 import { ActionTree } from 'vuex'
 import { IWeb3State } from '~/store/web3/state'
-import { connectNode, connectWallet } from '~/utils/web3'
+import { connectNode, connectWallet, getClaimableAmount, getStakerData } from '~/utils/web3'
 import { STAKING, REWARD } from '~/utils/abis'
+import { shiftedBy } from '~/utils'
 
 const actions: ActionTree<IWeb3State, IWeb3State> = {
   async connectNode ({ dispatch }) {
@@ -29,6 +30,12 @@ const actions: ActionTree<IWeb3State, IWeb3State> = {
       return r
     }
     await dispatch('token/fetchUserDataToken', null, { root: true })
+    const stakerData = await getStakerData()
+    const claimableAmount = await getClaimableAmount()
+    dispatch('token/setUserStakingContractTokens', {
+      staking: shiftedBy(stakerData[0], '18', 1),
+      rewards: shiftedBy(claimableAmount, '18', 1)
+    }, { root: true })
     return r
   }
 }

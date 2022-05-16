@@ -12,7 +12,9 @@ const getters: GetterTree<ITokenState, ITokenState> = {
   getTokensMap: (state): ITokensMap => state.tokensMap,
   getTokensKeys: (state): Array<string> => Object.keys(state.tokensMap),
   getDecimalsByAddress: state => (address: string): string => (state.tokensMap[address].decimals || ''),
-  getTokenAbi: state => (address: string): Array<any> => (state.tokensMap[address].abi || [])
+  getTokenAbi: state => (address: string): Array<any> => (state.tokensMap[address].abi || []),
+  getClaimableRewards: (state): number => state.stakerContractTokens.rewards,
+  getStaking: (state): number => state.stakerContractTokens.staking
 }
 
 export default getters

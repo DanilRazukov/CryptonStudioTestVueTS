@@ -16,6 +16,10 @@ const mutations: MutationTree<ITokenState> = {
       ...state.tokensMap,
       [address]: token
     }
+  },
+  SET_USER_STAKING_CONTRACT_TOKENS: (state, { staking, rewards }: {staking: number, rewards: number}) => {
+    state.stakerContractTokens.rewards = rewards
+    state.stakerContractTokens.staking = staking
   }
 }
 

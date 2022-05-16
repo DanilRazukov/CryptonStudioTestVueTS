@@ -22,6 +22,5 @@ export const error = (code?: number, msg?: string, data?: any): IResponse => ({
 
 export const shiftedBy = (value: string, decimals: string, mode?: number | 0): string => {
   const decimalsInt = mode === 0 ? parseInt(decimals) : -parseInt(decimals)
-  console.log(decimalsInt)
   return new BigNumber(value).shiftedBy(decimalsInt).toString()
 }
