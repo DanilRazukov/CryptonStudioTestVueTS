@@ -1,5 +1,4 @@
 import BasicContract from '~/classes/BasicContract'
-// import { ERC20, CONTRACT, STAKING, REWARD } from '~/utils/abis'
 import { createInst, fetchContractData, getUserAddress } from '~/utils/web3'
 import { error, IResponse, output } from '~/utils'
 

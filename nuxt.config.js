@@ -1,4 +1,5 @@
 import localeEn from './locales/en.json'
+import dateTimeFormats from './locales/dateTimeFormats'
 
 require('dotenv').config()
 
@@ -32,7 +33,7 @@ export default {
   modules: [
     '@nuxtjs/style-resources',
     'bootstrap-vue/nuxt',
-    'nuxt-i18n'
+    '@nuxtjs/i18n'
   ],
   plugins: [
     { src: '@plugins/vee-validate.ts' }
@@ -58,6 +59,7 @@ export default {
     defaultLocale: 'en',
     strategy: 'no_prefix',
     vueI18n: {
+      dateTimeFormats,
       messages: {
         en: localeEn
       }

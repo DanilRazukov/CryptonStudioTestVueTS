@@ -216,6 +216,22 @@ export const getRewards = async (fee: Record<string, any>): Promise<any> => {
   })
 }
 
+export const getContractOperationsInfo = async (): Promise<any> => {
+  const events = ['Staked', 'Unstaked', 'Claimed']
+  const eventsArray = await Promise.all(events.map((event) => {
+    return web3StakingContract.getPastEvents(event, {
+      filter: {
+        sender: userAddress
+      },
+      fromBlock: 0,
+      toBlock: 'latest'
+    })
+  }))
+  return eventsArray
+    .reduce((acc, rec) => acc.concat(rec), [])
+    .sort((a: any, b: any) => b.returnValues.time - a.returnValues.time)
+}
+
 export const getWeb3 = (): any => web3Wallet || web3Guest
 
 export const getUserAddress = (): string => userAddress

@@ -1,4 +1,5 @@
 import { ActionTree, createLogger } from 'vuex'
+import { i18n } from '~/plugins/i18n'
 import { ITokensMap, ITokenState } from '~/store/token/state'
 import Token from '~/classes/Token'
 import {
@@ -10,13 +11,18 @@ import {
   unstakeTokens,
   getStakerData,
   getClaimableAmount,
-  getRewards
+  getRewards,
+  getContractOperationsInfo
 } from '~/utils/web3'
 import { shiftedBy } from '~/utils'
-import { CONTRACT, STAKING } from '~/utils/abis'
+import { CONTRACT } from '~/utils/abis'
 import { ITokenGetter } from '~/store/token/getters'
 
 const actions: ActionTree<ITokenState, ITokenState> = {
+  initState ({ commit }) {
+    commit('SET_USER_INIT_STATE')
+  },
+
   createTokensByAddresses ({ commit }, tokensArray: Array<any>) {
     const tokens = tokensArray.map((item: any) => new Token(
       {
@@ -153,6 +159,7 @@ const actions: ActionTree<ITokenState, ITokenState> = {
       await dispatch('fetchStakingContractData')
       await dispatch('fetchCommonDataToken')
       await dispatch('fetchUserDataToken')
+      await dispatch('getOperationsInfo')
     } catch (e) {
       console.log(e)
     }
@@ -163,6 +170,27 @@ const actions: ActionTree<ITokenState, ITokenState> = {
       // @ts-ignore
       const fee = await getFee('claim', CONTRACT, process.env.CONTRACT)
       await getRewards(fee)
+    } catch (e) {
+      console.log(e)
+    }
+  },
+
+  async getOperationsInfo ({ getters, commit }) {
+    try {
+      const tokens = getters.getTokensMap
+      // @ts-ignore
+      const stakingToken = tokens[process.env.STAKING]
+      // @ts-ignore
+      const rewardToken = tokens[process.env.REWARDS]
+      let history = await getContractOperationsInfo()
+      history = history.map((event: any) => ({
+        event: event.event,
+        blockHash: event.blockHash,
+        time: i18n.d(event.returnValues.time * 1000, 'long'),
+        amount: shiftedBy(event.returnValues.amount, stakingToken.decimals, 1),
+        asset: event.event === 'Claimed' ? rewardToken.symbol : stakingToken.symbol
+      }))
+      commit('SET_USER_TRANSACTION_HISTORY', history)
     } catch (e) {
       console.log(e)
     }

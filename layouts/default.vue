@@ -13,12 +13,6 @@
 import MainVue from '~/mixins/MainVue'
 
 export default MainVue.extend({
-  mounted () {
-    this.SetLoader(true)
-    setTimeout(() => {
-      this.SetLoader(false)
-    }, 1000)
-  }
 })
 </script>
 <style lang="scss" scoped>

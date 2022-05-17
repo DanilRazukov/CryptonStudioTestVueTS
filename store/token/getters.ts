@@ -6,6 +6,9 @@ export interface ITokenGetter {
   getTokensKeys: string[];
   getDecimalsByAddress: (address: string) => string;
   getTokenAbi: (address: string) => Array<any>
+  getClaimableRewards: () => number
+  getStaking:() => number
+  getHistory: () => Array<any>
 }
 
 const getters: GetterTree<ITokenState, ITokenState> = {
@@ -14,7 +17,8 @@ const getters: GetterTree<ITokenState, ITokenState> = {
   getDecimalsByAddress: state => (address: string): string => (state.tokensMap[address].decimals || ''),
   getTokenAbi: state => (address: string): Array<any> => (state.tokensMap[address].abi || []),
   getClaimableRewards: (state): number => state.stakerContractTokens.rewards,
-  getStaking: (state): number => state.stakerContractTokens.staking
+  getStaking: (state): number => state.stakerContractTokens.staking,
+  getHistory: (state): Array<any> => state.history
 }
 
 export default getters

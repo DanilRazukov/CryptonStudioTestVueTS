@@ -28,5 +28,23 @@
     "required": "The {_field_} is required",
     "size": "The {_field_} field size must be less than {size}KB",
     "decimal": "The {_field_} field must contain only decimal values"
+  },
+  "main": {
+    "connectWallet": "Connect wallet",
+    "tokens": "Tokens :",
+    "symbol": "Symbol :",
+    "decimal": "Decimal :",
+    "name": "Name : ",
+    "allowance": "Allowance :",
+    "balance": "Your balance :",
+    "mint": "Mint",
+    "amount": "Amount",
+    "stake": "Stake",
+    "approve": "Approve",
+    "staking": "Staking :",
+    "unstake": "Unstake",
+    "rewards": "Rewards:",
+    "claim": "Claim",
+    "refresh": "Refresh"
   }
 }

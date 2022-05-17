@@ -20,6 +20,19 @@ const mutations: MutationTree<ITokenState> = {
   SET_USER_STAKING_CONTRACT_TOKENS: (state, { staking, rewards }: {staking: number, rewards: number}) => {
     state.stakerContractTokens.rewards = rewards
     state.stakerContractTokens.staking = staking
+  },
+  SET_USER_TRANSACTION_HISTORY: (state, history: Array<any>) => {
+    state.history = history || []
+  },
+  SET_USER_INIT_STATE: (state) => {
+    state.stakerContractTokens = {
+      staking: 0,
+      rewards: 0
+    }
+    Object.keys(state.tokensMap).forEach((key: string) => {
+      state.tokensMap[key].balance = ''
+    })
+    state.history = []
   }
 }
 

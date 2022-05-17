@@ -1,37 +1,59 @@
 <template>
   <div class="example">
-    <button class="btn btn-primary" @click="connectWallet">
-      connect wallet
+    <button
+      v-if="!isConnected"
+      class="btn btn-primary"
+      @click="connectWallet"
+    >
+      {{ $t('main.connectWallet') }}
     </button>
     <div>
-      Tokens:
+      {{ $t('main.tokens') }}
     </div>
     <div class="tokens">
-      <div v-for="address in tokensKeys" :key="address" class="tokens__info">
-        <div> Symbol: {{ tokensMap[address].symbol }} </div>
-        <div> Decimal: {{ tokensMap[address].decimals }} </div>
-        <div> Name: {{ tokensMap[address].name }} </div>
+      <div
+        v-for="address in tokensKeys"
+        :key="address"
+        class="tokens__info"
+      >
+        <div> {{ $t('main.symbol') }} {{ tokensMap[address].symbol }} </div>
+        <div> {{ $t('main.decimal') }} {{ tokensMap[address].decimals }} </div>
+        <div> {{ $t('main.name') }} {{ tokensMap[address].name }} </div>
         <div>
-          Allowance: {{ tokensMap[address].allowance }}
+          {{ $t('main.allowance') }} {{ tokensMap[address].allowance }}
         </div>
         <div>
-          Your balance: {{ tokensMap[address].balance || '-' }}
+          {{ $t('main.balance') }} {{ tokensMap[address].balance || '-' }}
         </div>
-        <div v-if="tokensMap[address].use === 'STAKING'">
+        <div
+          v-if="tokensMap[address].use === 'STAKING'"
+        >
           <div>
-            <input v-model="mint" type="text" placeholder="mint">
-            <button class="btn btn-primary" @click="handleMint(address)">
-              Mint
+            <input
+              v-model="mint"
+              type="number"
+              :placeholder="$t('main.amount')"
+            >
+            <button
+              class="btn btn-primary"
+              :disabled="!mint"
+              @click="handleMint(address)"
+            >
+              {{ $t('main.mint') }}
             </button>
           </div>
           <div>
-            <input v-model="amount" type="text" placeholder="amount">
+            <input
+              v-model="amount"
+              type="number"
+              :placeholder="$t('main.amount')"
+            >
             <button
               v-if="amount <= tokensMap[address].allowance && amount > 0"
               class="btn btn-primary"
               @click="handleStake"
             >
-              Stake
+              {{ $t('main.stake') }}
             </button>
             <button
               v-else
@@ -41,7 +63,7 @@
               ]"
               @click="handleApprove"
             >
-              Approve
+              {{ $t('main.approve') }}
             </button>
           </div>
         </div>
@@ -49,27 +71,45 @@
       <div>
         <div>
           <div>
-            Staking: {{ staking }}
+            {{ $t('main.staking') }} {{ staking }}
           </div>
-          <input v-model="amountUnstake" type="text" placeholder="amount unstake">
-          <button class="btn btn-primary" @click="unstake">
-            Unstake
+          <input
+            v-model="amountUnstake"
+            type="number"
+            :placeholder="$t('main.staking')"
+          >
+          <button
+            class="btn btn-primary"
+            :disabled="!amountUnstake"
+            @click="unstake"
+          >
+            {{ $t('main.unstake') }}
           </button>
         </div>
         <div>
           <div>
-            Rewards: {{ rewards }}
+            {{ $t('main.rewards') }} {{ rewards }}
           </div>
           <div>
-            <button class="btn btn-primary" @click="claim">
-              Claim
+            <button
+              class="btn btn-primary"
+              :disabled="!rewards"
+              @click="claim"
+            >
+              {{ $t('main.claim') }}
             </button>
           </div>
         </div>
-        <button class="btn btn-primary" @click="refresh">
-          Refresh
+        <button
+          class="btn btn-primary"
+          @click="refresh"
+        >
+          {{ $t('main.refresh') }}
         </button>
       </div>
+    </div>
+    <div class="history">
+      <b-table striped hover :items="history" />
     </div>
   </div>
 </template>
@@ -86,15 +126,23 @@ export default MainVue.extend({
     amountUnstake: ''
   }),
   async mounted () {
-    await this.connectNode()
-    await this.connectWallet()
+    this.changeLoader(true)
+    try {
+      await this.connectNode()
+      await this.connectWallet()
+    } catch (e) {
+      console.log(e)
+    }
+    this.changeLoader(false)
   },
   computed: {
     ...mapGetters({
       tokensMap: 'token/getTokensMap',
       tokensKeys: 'token/getTokensKeys',
       rewards: 'token/getClaimableRewards',
-      staking: 'token/getStaking'
+      staking: 'token/getStaking',
+      history: 'token/getHistory',
+      isConnected: 'web3/getIsConnected'
     })
   },
   methods: {
@@ -177,5 +225,13 @@ export default MainVue.extend({
 .tokens {
   display: flex;
   justify-content: space-between;
+}
+
+.history {
+  &__item {
+    display: flex;
+    align-items: center;
+    grid-gap: 10px;
+  }
 }
 </style>

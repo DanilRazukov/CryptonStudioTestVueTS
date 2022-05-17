@@ -12,6 +12,7 @@ export interface stakingTokens {
 export interface ITokenState {
   tokensMap: ITokensMap,
   stakerContractTokens: stakingTokens
+  history: Array<any>
 }
 
 export const initState = (): ITokenState => ({
@@ -19,7 +20,8 @@ export const initState = (): ITokenState => ({
   stakerContractTokens: {
     staking: 0,
     rewards: 0
-  }
+  },
+  history: []
 })
 
 export default initState
